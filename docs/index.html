@@ -405,31 +405,14 @@ library(sf)</code></pre>
 </div>
 <div id="download-and-clean-data-for-political-stability" class="section level3">
 <h3>Download and clean data for Political Stability</h3>
-<pre class="r"><code>n=20
-Arg = fredr_series_search_text(&quot;Argentina debt GDP&quot;)
-Arg$title</code></pre>
-<pre><code>##  [1] &quot;General government gross debt for Argentina&quot;                                        
-##  [2] &quot;General Government Gross Debt for Argentina&quot;                                        
-##  [3] &quot;Total Credit to Private Non-Financial Sector, Adjusted for Breaks, for Argentina&quot;   
-##  [4] &quot;Total Credit to Private Non-Financial Sector, Adjusted for Breaks, for Argentina&quot;   
-##  [5] &quot;Outstanding Total International Debt Securities to GDP for Argentina&quot;               
-##  [6] &quot;Outstanding Domestic Public Debt Securities to GDP for Argentina&quot;                   
-##  [7] &quot;Outstanding International Public Debt Securities to GDP for Argentina&quot;              
-##  [8] &quot;Total Credit to Households and NPISHs, Adjusted for Breaks, for Argentina&quot;          
-##  [9] &quot;Total Credit to Households and NPISHs, Adjusted for Breaks, for Argentina&quot;          
-## [10] &quot;Gross Portfolio Debt Liabilities to GDP for Argentina&quot;                              
-## [11] &quot;Projection of General government gross debt for Argentina&quot;                          
-## [12] &quot;Total Credit to Non-Financial Sector, Adjusted for Breaks, for Argentina&quot;           
-## [13] &quot;Total Credit to Non-Financial Sector, Adjusted for Breaks, for Argentina&quot;           
-## [14] &quot;Total Credit to General Government, Adjusted for Breaks, for Argentina&quot;             
-## [15] &quot;Outstanding Domestic Private Debt Securities to GDP for Argentina&quot;                  
-## [16] &quot;Outstanding International Private Debt Securities to GDP for Argentina&quot;             
-## [17] &quot;Nominal Total Credit to General Government, Adjusted for Breaks, for Argentina&quot;     
-## [18] &quot;Loans from Non-Resident Banks, Net, to GDP for Argentina&quot;                           
-## [19] &quot;Total Credit to Non-Financial Corporations, Adjusted for Breaks, for Argentina&quot;     
-## [20] &quot;Total Credit to Non-Financial Corporations, Adjusted for Breaks, for Argentina&quot;     
-## [21] &quot;Credit to Private Non-Financial Sector by Banks, Adjusted for Breaks, for Argentina&quot;
-## [22] &quot;Credit to Private Non-Financial Sector by Banks, Adjusted for Breaks, for Argentina&quot;</code></pre>
+<pre class="r"><code>Arg = fredr_series_search_text(&quot;Argentina debt GDP&quot;)
+head(Arg$title)</code></pre>
+<pre><code>## [1] &quot;General government gross debt for Argentina&quot;                                     
+## [2] &quot;General Government Gross Debt for Argentina&quot;                                     
+## [3] &quot;Total Credit to Private Non-Financial Sector, Adjusted for Breaks, for Argentina&quot;
+## [4] &quot;Total Credit to Private Non-Financial Sector, Adjusted for Breaks, for Argentina&quot;
+## [5] &quot;Outstanding Total International Debt Securities to GDP for Argentina&quot;            
+## [6] &quot;Outstanding Domestic Public Debt Securities to GDP for Argentina&quot;</code></pre>
 <pre class="r"><code>Arg$id[5]</code></pre>
 <pre><code>## [1] &quot;DDDM07ARA156NWDB&quot;</code></pre>
 <pre class="r"><code>Arg.debt = fredr(&quot;DDDM07ARA156NWDB&quot;)
@@ -462,107 +445,13 @@ colnames(Arg.CO2) &lt;- c(&quot;date1&quot;, &quot;Arg.CO2&quot;)</code></pre>
 <div id="download-and-clean-data-for-environmental-sustainability" class="section level3">
 <h3>Download and clean data for Environmental Sustainability</h3>
 <pre class="r"><code>Arg.CPI = fredr_series_search_text(&quot;Argentina CPI&quot;)
-Arg.CPI$title</code></pre>
-<pre><code>##   [1] &quot;Inflation, consumer prices for Argentina&quot;                                                                                     
-##   [2] &quot;Consumer Price Index for Argentina&quot;                                                                                           
-##   [3] &quot;Consumer Price Index for Argentina&quot;                                                                                           
-##   [4] &quot;Consumer Price Index: All items: Total: Total for Argentina&quot;                                                                  
-##   [5] &quot;Consumer Price Index: All items: Total: Total for Argentina&quot;                                                                  
-##   [6] &quot;Consumer Price Index: All items: Total: Total for Argentina&quot;                                                                  
-##   [7] &quot;Consumer Price Index: All items: Total: Total for Argentina&quot;                                                                  
-##   [8] &quot;Consumer Price Index: All items: Total: Total for Argentina&quot;                                                                  
-##   [9] &quot;Consumer Price Index: All items: Total: Total for Argentina&quot;                                                                  
-##  [10] &quot;Consumer Price Index: OECD Groups: Goods: Total for Argentina&quot;                                                                
-##  [11] &quot;Consumer Price Index: OECD Groups: Goods: Total for Argentina&quot;                                                                
-##  [12] &quot;Consumer Price Index: OECD Groups: Goods: Total for Argentina&quot;                                                                
-##  [13] &quot;Consumer Price Index: OECD Groups: Goods: Total for Argentina&quot;                                                                
-##  [14] &quot;Consumer Price Index: Education (COICOP 10): Total: Total for Argentina&quot;                                                      
-##  [15] &quot;Consumer Price Index: Education (COICOP 10): Total: Total for Argentina&quot;                                                      
-##  [16] &quot;Consumer Price Index: Communication (COICOP 08): Total: Total for Argentina&quot;                                                  
-##  [17] &quot;Consumer Price Index: Communication (COICOP 08): Total: Total for Argentina&quot;                                                  
-##  [18] &quot;Consumer Price Index: Recreation and culture (COICOP 09): Total: Total for Argentina&quot;                                         
-##  [19] &quot;Consumer Price Index: Restaurants and hotels (COICOP 11): Total: Total for Argentina&quot;                                         
-##  [20] &quot;Consumer Price Index: Clothing and footwear (COICOP 03): Total: Total for Argentina&quot;                                          
-##  [21] &quot;Consumer Price Index: Alcoholic beverages, tobacco and narcotics (COICOP 02): Total: Total for Argentina&quot;                     
-##  [22] &quot;Consumer Price Index: Alcoholic beverages, tobacco and narcotics (COICOP 02): Total: Total for Argentina&quot;                     
-##  [23] &quot;Consumer Price Index: Education (COICOP 10): Total: Total for Argentina&quot;                                                      
-##  [24] &quot;Consumer Price Index: Education (COICOP 10): Total: Total for Argentina&quot;                                                      
-##  [25] &quot;Consumer Price Index: Communication (COICOP 08): Total: Total for Argentina&quot;                                                  
-##  [26] &quot;Consumer Price Index: Communication (COICOP 08): Total: Total for Argentina&quot;                                                  
-##  [27] &quot;Consumer Price Index: Food and non-Alcoholic beverages (COICOP 01): Total: Total for Argentina&quot;                               
-##  [28] &quot;Consumer Price Index: Education (COICOP 10): Total: Total for Argentina&quot;                                                      
-##  [29] &quot;Consumer Price Index: Education (COICOP 10): Total: Total for Argentina&quot;                                                      
-##  [30] &quot;Consumer Price Index: Communication (COICOP 08): Total: Total for Argentina&quot;                                                  
-##  [31] &quot;Consumer Price Index: Communication (COICOP 08): Total: Total for Argentina&quot;                                                  
-##  [32] &quot;Consumer Price Index: Recreation and culture (COICOP 09): Total: Total for Argentina&quot;                                         
-##  [33] &quot;Consumer Price Index: Restaurants and hotels (COICOP 11): Total: Total for Argentina&quot;                                         
-##  [34] &quot;Consumer Price Index: Clothing and footwear (COICOP 03): Total: Total for Argentina&quot;                                          
-##  [35] &quot;Consumer Price Index: Recreation and culture (COICOP 09): Total: Total for Argentina&quot;                                         
-##  [36] &quot;Consumer Price Index: Restaurants and hotels (COICOP 11): Total: Total for Argentina&quot;                                         
-##  [37] &quot;Consumer Price Index: Clothing and footwear (COICOP 03): Total: Total for Argentina&quot;                                          
-##  [38] &quot;Consumer Price Index: Clothing and footwear (COICOP 03): Total: Total for Argentina&quot;                                          
-##  [39] &quot;Consumer Price Index: Alcoholic beverages, tobacco and narcotics (COICOP 02): Total: Total for Argentina&quot;                     
-##  [40] &quot;Consumer Price Index: Food and non-Alcoholic beverages (COICOP 01): Total: Total for Argentina&quot;                               
-##  [41] &quot;Consumer Price Index: Food and non-Alcoholic beverages (COICOP 01): Total: Total for Argentina&quot;                               
-##  [42] &quot;Consumer Price Index: Recreation and culture (COICOP 09): Total: Total for Argentina&quot;                                         
-##  [43] &quot;Consumer Price Index: Restaurants and hotels (COICOP 11): Total: Total for Argentina&quot;                                         
-##  [44] &quot;Consumer Price Index: Restaurants and hotels (COICOP 11): Total: Total for Argentina&quot;                                         
-##  [45] &quot;Consumer Price Index: Clothing and footwear (COICOP 03): Total: Total for Argentina&quot;                                          
-##  [46] &quot;Consumer Price Index: Alcoholic beverages, tobacco and narcotics (COICOP 02): Total: Total for Argentina&quot;                     
-##  [47] &quot;Consumer Price Index: Food and non-Alcoholic beverages (COICOP 01): Total: Total for Argentina&quot;                               
-##  [48] &quot;Consumer Price Index: Recreation and culture (COICOP 09): Total: Total for Argentina&quot;                                         
-##  [49] &quot;Consumer Price Index: Recreation and culture (COICOP 09): Total: Total for Argentina&quot;                                         
-##  [50] &quot;Consumer Price Index: Restaurants and hotels (COICOP 11): Total: Total for Argentina&quot;                                         
-##  [51] &quot;Consumer Price Index: Clothing and footwear (COICOP 03): Total: Total for Argentina&quot;                                          
-##  [52] &quot;Consumer Price Index: Food and non-Alcoholic beverages (COICOP 01): Total: Total for Argentina&quot;                               
-##  [53] &quot;Consumer Price Index: Alcoholic beverages, tobacco and narcotics (COICOP 02): Total: Total for Argentina&quot;                     
-##  [54] &quot;Consumer Price Index: Alcoholic beverages, tobacco and narcotics (COICOP 02): Total: Total for Argentina&quot;                     
-##  [55] &quot;Consumer Price Index: Food and non-Alcoholic beverages (COICOP 01): Total: Total for Argentina&quot;                               
-##  [56] &quot;Consumer Price Index: Health (COICOP 06): Total: Total for Argentina&quot;                                                         
-##  [57] &quot;Consumer Price Index: Health (COICOP 06): Total: Total for Argentina&quot;                                                         
-##  [58] &quot;Consumer Price Index: Health (COICOP 06): Total: Total for Argentina&quot;                                                         
-##  [59] &quot;Consumer Price Index: Health (COICOP 06): Total: Total for Argentina&quot;                                                         
-##  [60] &quot;Consumer Price Index: Health (COICOP 06): Total: Total for Argentina&quot;                                                         
-##  [61] &quot;Consumer Price Index: Health (COICOP 06): Total: Total for Argentina&quot;                                                         
-##  [62] &quot;Consumer Price Index: Furnishings, household equip. and routine household maintenance (COICOP 05): Total: Total for Argentina&quot;
-##  [63] &quot;Consumer Price Index: Furnishings, household equip. and routine household maintenance (COICOP 05): Total: Total for Argentina&quot;
-##  [64] &quot;Consumer Price Index: Furnishings, household equip. and routine household maintenance (COICOP 05): Total: Total for Argentina&quot;
-##  [65] &quot;Consumer Price Index: Furnishings, household equip. and routine household maintenance (COICOP 05): Total: Total for Argentina&quot;
-##  [66] &quot;Consumer Price Index: Furnishings, household equip. and routine household maintenance (COICOP 05): Total: Total for Argentina&quot;
-##  [67] &quot;Consumer Price Index: Furnishings, household equip. and routine household maintenance (COICOP 05): Total: Total for Argentina&quot;
-##  [68] &quot;Consumer Price Index: OECD Groups: Services: Total for Argentina&quot;                                                             
-##  [69] &quot;Consumer Price Index: OECD Groups: Services: Total for Argentina&quot;                                                             
-##  [70] &quot;Consumer Price Index: Transport (COICOP 07): Total: Total for Argentina&quot;                                                      
-##  [71] &quot;Consumer Price Index: Transport (COICOP 07): Total: Total for Argentina&quot;                                                      
-##  [72] &quot;Consumer Price Index: Transport (COICOP 07): Total: Total for Argentina&quot;                                                      
-##  [73] &quot;Consumer Price Index: Transport (COICOP 07): Total: Total for Argentina&quot;                                                      
-##  [74] &quot;Consumer Price Index: OECD Groups: Services: Total for Argentina&quot;                                                             
-##  [75] &quot;Consumer Price Index: OECD Groups: Services: Total for Argentina&quot;                                                             
-##  [76] &quot;Consumer Price Index: Housing, water, electricity, gas and other fuels (COICOP 04): Total: Total for Argentina&quot;               
-##  [77] &quot;Consumer Price Index: Housing, water, electricity, gas and other fuels (COICOP 04): Total: Total for Argentina&quot;               
-##  [78] &quot;Consumer Price Index: Transport (COICOP 07): Total: Total for Argentina&quot;                                                      
-##  [79] &quot;Consumer Price Index: Transport (COICOP 07): Total: Total for Argentina&quot;                                                      
-##  [80] &quot;Consumer Price Index: Miscellaneous goods and services (COICOP 12): Total: Total for Argentina&quot;                               
-##  [81] &quot;Consumer Price Index: Miscellaneous goods and services (COICOP 12): Total: Total for Argentina&quot;                               
-##  [82] &quot;Consumer Price Index: Housing, water, electricity, gas and other fuels (COICOP 04): Total: Total for Argentina&quot;               
-##  [83] &quot;Consumer Price Index: Housing, water, electricity, gas and other fuels (COICOP 04): Total: Total for Argentina&quot;               
-##  [84] &quot;Consumer Price Index: Miscellaneous goods and services (COICOP 12): Total: Total for Argentina&quot;                               
-##  [85] &quot;Consumer Price Index: Miscellaneous goods and services (COICOP 12): Total: Total for Argentina&quot;                               
-##  [86] &quot;Consumer Price Index: Housing, water, electricity, gas and other fuels (COICOP 04): Total: Total for Argentina&quot;               
-##  [87] &quot;Consumer Price Index: Housing, water, electricity, gas and other fuels (COICOP 04): Total: Total for Argentina&quot;               
-##  [88] &quot;Consumer Price Index: Miscellaneous goods and services (COICOP 12): Total: Total for Argentina&quot;                               
-##  [89] &quot;Consumer Price Index: Miscellaneous goods and services (COICOP 12): Total: Total for Argentina&quot;                               
-##  [90] &quot;Bank Deposits to GDP for Argentina&quot;                                                                                           
-##  [91] &quot;Stock Market Capitalization to GDP for Argentina&quot;                                                                             
-##  [92] &quot;Outstanding Total International Debt Securities to GDP for Argentina&quot;                                                         
-##  [93] &quot;Central Bank Assets to GDP for Argentina&quot;                                                                                     
-##  [94] &quot;Private Credit by Deposit Money Banks and Other Financial Institutions to GDP for Argentina&quot;                                  
-##  [95] &quot;Private Credit by Deposit Money Banks to GDP for Argentina&quot;                                                                   
-##  [96] &quot;Liquid Liabilities to GDP for Argentina&quot;                                                                                      
-##  [97] &quot;Deposit Money Bank Assets to GDP for Argentina&quot;                                                                               
-##  [98] &quot;Stock Market Turnover Ratio (Value Traded/Capitalization) for Argentina&quot;                                                      
-##  [99] &quot;Financial System Deposits to GDP for Argentina&quot;                                                                               
-## [100] &quot;Non-Bank Financial Institutions&#39; Assets to GDP for Argentina&quot;</code></pre>
+head(Arg.CPI$title)</code></pre>
+<pre><code>## [1] &quot;Inflation, consumer prices for Argentina&quot;                   
+## [2] &quot;Consumer Price Index for Argentina&quot;                         
+## [3] &quot;Consumer Price Index for Argentina&quot;                         
+## [4] &quot;Consumer Price Index: All items: Total: Total for Argentina&quot;
+## [5] &quot;Consumer Price Index: All items: Total: Total for Argentina&quot;
+## [6] &quot;Consumer Price Index: All items: Total: Total for Argentina&quot;</code></pre>
 <pre class="r"><code>Arg.CPI$id[2]</code></pre>
 <pre><code>## [1] &quot;DDOE01ARA086NWDB&quot;</code></pre>
 <pre class="r"><code>Arg.CPI = fredr(&quot;DDOE01ARA086NWDB&quot;)
@@ -584,6 +473,22 @@ Arg = cbind(Arg, Arg.mean)</code></pre>
 </div>
 <div id="binding-countries-by-row-yields-the-following-table" class="section level4">
 <h4>Binding Countries by row yields the following table</h4>
+<pre class="r"><code>str(AU)</code></pre>
+<pre><code>## &#39;data.frame&#39;:    210 obs. of  6 variables:
+##  $ country: Factor w/ 14 levels &quot;Argentina&quot;,&quot;Bolivia&quot;,..: 1 1 1 1 1 1 1 1 1 1 ...
+##  $ date   : int  2014 2013 2012 2011 2010 2009 2008 2007 2006 2005 ...
+##  $ debt   : num  9.47 9.46 9.3 9.65 12.05 ...
+##  $ CO2    : num  204025 189852 192356 191634 187919 ...
+##  $ CPI    : num  113 135 121 110 100 ...
+##  $ mean   : num  603 623 601 587 609 ...</code></pre>
+<pre class="r"><code>head(AU)</code></pre>
+<pre><code>##     country date     debt      CO2      CPI     mean
+## 1 Argentina 2014  9.46895 204024.5 113.3800 602.8004
+## 2 Argentina 2013  9.46153 189851.6 134.6680 623.0841
+## 3 Argentina 2012  9.29994 192356.2 121.3980 601.0804
+## 4 Argentina 2011  9.64515 191633.8 109.5330 587.1855
+## 5 Argentina 2010 12.04860 187919.1 100.0000 609.4936
+## 6 Argentina 2009 15.17380 179961.7  90.1606 626.7539</code></pre>
 <p>data %&gt;% slice(1:10) %&gt;% #show only 1:n rows kable(digits=2,align=“c”)%&gt;% #make table and round to two digits kable_styling(bootstrap_options = c(“striped”, “hover”, “condensed”, “responsive”)) #apply other formatting</p>
 <p>Add any additional processing steps here.</p>
 </div>

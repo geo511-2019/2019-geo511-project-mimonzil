@@ -12,24 +12,6 @@ fredr_set_key("6b0cdd4cca87cf2616946fd1b9c3e865")
 
 # Political Stability - Indicator = Public Debt
 
-tabs=fredr_series_search_text("Outstanding Total International Debt Securities") %>% 
-  filter(grepl("^Outstanding Total International Debt Securities",title),
-         !grepl("DISCONTINUED",title))
-
-debt_all=foreach(table=tabs$id, .combine=rbind)%do%{
-  country=sub("Outstanding Total International Debt Securities to GDP for","",
-              tabs$title[tabs$id==table])
-  debt = fredr("DDDM07ARA156NWDB") %>% 
-    filter(date >= as.Date("2000-01-01"),date <= as.Date("2014-01-01")) %>%
-    mutate(country=country,
-           variable="Debt")
-}
-
-dplyr::select(dates.1, value) %>%
-  arrange((desc(dates.1)))
-Arg.debt.1
-colnames(Arg.debt.1) <- c("date", "Arg.debt")
-Arg.debt.1
 
 
 Arg = fredr_series_search_text("Argentina debt GDP")
@@ -83,9 +65,6 @@ debtnames = c("date", "debt")
 
 Arg.debt = fredr("DDDM07ARA156NWDB")
 Arg.debt
-head(Arg.debt)
-
-tail(Arg.debt)
 Arg.debt.1 = cbind(dates.1, Arg.debt) %>%
   filter(dates.1 >= 2000) %>%
   filter(dates.1 <= 2014) %>%
@@ -259,57 +238,6 @@ colnames(Uru.debt.1) <- c("date", "Uru.debt")
 Uru.debt.1
 
 
-Lat.AM = c("Argentina", "Bolivia", "Brazil", "Chile", "Colombia", 
-           "Costa Rica", "Dominican Repbulic", "Ecuador", 
-           "El Salvador", "Mexico", "Panama", 
-           "Paraguay", "Peru", "Uruguay")
-
-Arg.debt.1
-
-ggplot(Arg.debt.1, aes(date, Arg.debt))+
-  geom_point()
-
-ggplot(Bol.debt.1, aes(date, Bol.debt))+
-  geom_point()
-
-ggplot(Bra.debt.1, aes(date, Bra.debt))+
-  geom_point()
-
-ggplot(Chi.debt.1, aes(date, Chi.debt))+
-  geom_point()
-
-ggplot(Col.debt.1, aes(date, Col.debt))+
-  geom_point()
-
-ggplot(Cos.debt.1, aes(date, Cos.debt))+
-  geom_point()
-
-ggplot(Dom.debt.1, aes(date, Dom.debt))+
-  geom_point()
-
-ggplot(Ecu.debt.1, aes(date, Ecu.debt))+
-  geom_point()
-
-ggplot(Els.debt.1, aes(date, Els.debt))+
-  geom_point()
-
-
-ggplot(Mex.debt.1, aes(date, Mex.debt))+
-  geom_point()
-
-ggplot(Pan.debt.1, aes(date, Pan.debt))+
-  geom_point()
-
-ggplot(Par.debt.1, aes(date, Par.debt))+
-  geom_point()
-
-ggplot(Per.debt.1, aes(date, Per.debt))+
-  geom_point()
-
-ggplot(Uru.debt.1, aes(date, Uru.debt))+
-  geom_point()
-
-
 # Environmental Sustainability - Indicator = CO2 Emissions
 
 wbsearch(pattern = " CO2 emission")
@@ -331,8 +259,6 @@ Bol.CO2 = CO2 %>%
   dplyr::select(date, value)
 colnames(Bol.CO2) <- c("date1", "Bol.CO2")
 Bol.CO2
-
-Lat.AM
 
 Bra.CO2 = CO2 %>%
   filter(country == "Brazil") %>%
@@ -383,15 +309,6 @@ Els.CO2 = CO2 %>%
 colnames(Els.CO2) <- c("date1", "Els.CO2")
 Els.CO2
 
-Gua.CO2 = CO2 %>%
-  filter(country == "Guatemala") %>%
-  filter(date >= 2000) %>%
-  dplyr::select(date, value)
-colnames(Gua.CO2) <- CO2names
-Gua.CO2
-
-Lat.AM
-
 Mex.CO2 = CO2 %>%
   filter(country == "Mexico") %>%
   filter(date >= 2000) %>%
@@ -428,8 +345,6 @@ colnames(Uru.CO2) <- c("date1", "Uru.CO2")
 Uru.CO2
 
 # Economic Stability = Inflation Rate
-
-
 
 Arg.CPI = fredr_series_search_text("Argentina CPI")
 Arg.CPI$title
@@ -569,20 +484,6 @@ Els.CPI.1
 colnames(Els.CPI.1) <- c("date2", "Els.CPI")
 Els.CPI.1
 
-Gua = fredr_series_search_text("Guatemala CPI")
-Gua$title
-Gua$id[2]
-Gua.CPI = fredr("DDOE01GTA086NWDB")
-head(Gua.CPI)
-tail(Gua.CPI)
-Gua.CPI.1 = cbind(CPIdates.2, Gua.CPI) %>%
-  filter(CPIdates.2 >= 2000) %>%
-  filter(CPIdates.2 <= 2014) %>%
-  dplyr::select(CPIdates.2, value) %>%
-  arrange((desc(CPIdates.2)))
-Gua.CPI.1
-colnames(Gua.CPI.1) <- c("date2", "Gua.CPI")
-Gua.CPI.1
 
 Mex = fredr_series_search_text("Mexico CPI")
 Mex$title
@@ -761,9 +662,6 @@ Uru
 
 Arg
 
-ggplot(Arg, aes(date, Arg.mean))+
-  geom_point()+
-  geom_line()
 
 
 countrynames = c("country", "date", "debt", "CO2", "CPI", "mean")
