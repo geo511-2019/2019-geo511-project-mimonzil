@@ -5,6 +5,11 @@ library(ggplot2)
 library(foreach)
 library(spData)
 library(sf)
+library(plm)
+library(forecast)
+library(sp)
+library(rworldmap)
+library(ggmap)
 
 
 
@@ -779,3 +784,82 @@ ggplot(AU, aes(date, mean, col = country))+
   geom_line()+
   facet_wrap(~country)
 
+# Build a Panel Data Model
+
+AU.fe <- plm(mean~date, data = AU, model = "within")
+summary(AU.fe)
+AU.po <- plm(mean~date, data = AU, model = "pooling")
+summary(AU.po)
+AU.fd <- plm(mean~date, data = AU, model = "fd")
+summary(AU.fd)
+AU.bt <- plm(mean~date, data = AU, model = "between")
+summary(AU.bt)
+AU.ra <- plm(mean~date, data = AU, model = "random")
+summary(AU.ra)
+
+fitted.AU.fe = function(AU.fe)
+  AU.fe$model[[1]] - AU.fe$residuals
+
+# Mapping
+
+AU.2014 = AU %>%
+  dplyr::filter(date == 2014)
+AU.2014
+
+library(rworldmap)
+
+library(rworldmap)  
+df <- NULL  
+df$country <- c("Brazil","Mexico","Argentina")  
+df$code<-c("BRA", "MEX", "ARG")  
+df$popsize<-c(1000, 5000, 200)  
+df<-as.data.frame(df)  
+sPDF <- joinCountryData2Map( df, joinCode = "ISO3", nameJoinColumn = "code")  
+mapCountryData(sPDF, nameColumnToPlot="popsize", mapRegion='latin america')
+
+df <- NULL  
+df$country <- c("Argentina", "Bolivia", "Brazil", "Chile", "Costa Rica", "Ecuador", "Dominican Republic", "Ecuador", "El Salvador", "Mexico", "Panama", "Paraguay", "Peru", "Uruguay")
+df$code<- c("ARG", "BOL", "BRA", "CHL", "COL", "CRI", "DOM", "ECU", "SLV", "MEX", "PAN", "PRY", "PER", "URY")  
+df$mean = AU$mean
+df<-as.data.frame(df)  
+sPDF <- joinCountryData2Map( df, joinCode = "NAME", nameJoinColumn = "code")  
+
+lat.am = mapCountryData(sPDF, nameColumnToPlot="mean", mapRegion='latin america',xlim=bbox(sPDFmyCountries)[1,], ylim=bbox(sPDFmyCountries)[2,])
+
+sPDFmyCountries <- sPDF[sPDF$NAME %in% df$country,]
+#use the bbox to define xlim & ylim
+k = bbox(sPDFmyCountries)
+
+x = (-34.72999+117.12776)/2
+x
+y = (32.72083+55.61183)/2
+y
+
+map = get_map(location = k, maptype = "toner")
+ggmap(map)
+class(map)
+
+# I need to fortify the data AND keep trace of the commune code! (Takes ~2 minutes)
+library(broom)
+spdf_fortified <- tidy(lat.am, region = "code")
+
+# Now I can plot this shape easily as described before:
+library(ggplot2)
+ggplot() +
+  geom_polygon(data = spdf_fortified, aes( x = long, y = lat, group = group), fill="white", color="grey") +
+  theme_void() +
+  coord_map()
+
+?get_map
+
+
+library(ggmap)
+library(leaflet)
+
+?joinCountryData2Map
+
+
+# Forecasting 
+Arg.ar = auto.arima(Arg.mean)
+summary(Arg.ar)
+Arg.for = forecast(Arg$Arg.mean, level = 95, model = Arg.ar)

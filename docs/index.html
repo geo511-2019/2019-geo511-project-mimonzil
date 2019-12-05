@@ -374,6 +374,8 @@ div.tocify {
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
 <p>The UN Development Program every year publishes it’s Human Development Index. The goal of this measure is to measure human development by country with respect to economic output, education level and health outcome. The goal of this project will be to reimagine such an index to account for political stability, economic stability, and economic sustainability. The index will be calculated and analyzed for nations comprising Latin America.</p>
+<pre class="r"><code>ggmap(map)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
 </div>
 <div id="materials-and-methods" class="section level1">
 <h1>Materials and methods</h1>
@@ -401,7 +403,11 @@ library(dplyr)
 library(ggplot2)
 library(foreach)
 library(spData)
-library(sf)</code></pre>
+library(sf)
+library(plm)
+library(forecast)
+library(rworldmap)
+library(ggmap)</code></pre>
 </div>
 <div id="download-and-clean-data-for-political-stability" class="section level3">
 <h3>Download and clean data for Political Stability</h3>
@@ -489,25 +495,115 @@ Arg = cbind(Arg, Arg.mean)</code></pre>
 ## 4 Argentina 2011  9.64515 191633.8 109.5330 587.1855
 ## 5 Argentina 2010 12.04860 187919.1 100.0000 609.4936
 ## 6 Argentina 2009 15.17380 179961.7  90.1606 626.7539</code></pre>
-<p>data %&gt;% slice(1:10) %&gt;% #show only 1:n rows kable(digits=2,align=“c”)%&gt;% #make table and round to two digits kable_styling(bootstrap_options = c(“striped”, “hover”, “condensed”, “responsive”)) #apply other formatting</p>
-<p>Add any additional processing steps here.</p>
 </div>
 </div>
 </div>
 <div id="results" class="section level1">
 <h1>Results</h1>
-<p>Show tables, plots, etc. and describe them.</p>
-<p>{r, fig.width=6, fig.height=3, fig.cap=“Map of completely random data”} m &lt;- leaflet(data) %&gt;% addTiles() %&gt;% addCircleMarkers(~x, ~y, radius = ~size,color = ~as.factor(category)) %&gt;% addPopups(~x[2], ~y[2], “Random popup”) m # a map with the default OSM tile layer</p>
-<pre><code>
-
-``{r}
-data %&gt;% 
-  ggplot(aes(x=x,y=y,col=category))+
-  geom_point()</code></pre>
+<div id="first-lets-examine-what-the-individual-country-level-trends-look-like" class="section level5">
+<h5>First let’s examine what the individual country level trends look like:</h5>
+<pre class="r"><code>ggplot(AU, aes(date, mean, col = country))+
+  geom_point()+
+  geom_line()+
+  facet_wrap(~country)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-9-1.png" width="672" /> Note that as the indicator goes up, utility goes down.</p>
+<p>Next is it possible to identify a trend?</p>
+<p>There isn’t enough data yet to build a time-series model of any one single country. However, if we use a panel data model, it is possible to extend our analysis across borders.</p>
+</div>
+<div id="fixed-effects" class="section level5">
+<h5>Fixed Effects</h5>
+<pre class="r"><code>AU.fe &lt;- plm(mean~date, data = AU, model = &quot;within&quot;)
+summary(AU.fe)</code></pre>
+<pre><code>## Oneway (individual) effect Within Model
+## 
+## Call:
+## plm(formula = mean ~ date, data = AU, model = &quot;within&quot;)
+## 
+## Balanced Panel: n = 14, T = 15, N = 210
+## 
+## Residuals:
+##      Min.   1st Qu.    Median   3rd Qu.      Max. 
+## -166.1575  -27.5008   -4.4719   26.9320  210.0539 
+## 
+## Coefficients:
+##          Estimate Std. Error t-value  Pr(&gt;|t|)    
+## date2001   13.430     19.787  0.6787 0.4981908    
+## date2002   49.486     19.787  2.5009 0.0132704 *  
+## date2003   61.328     19.787  3.0994 0.0022475 ** 
+## date2004   63.496     19.787  3.2089 0.0015747 ** 
+## date2005   50.068     19.787  2.5303 0.0122447 *  
+## date2006   54.455     19.787  2.7520 0.0065221 ** 
+## date2007   56.297     19.787  2.8451 0.0049482 ** 
+## date2008   45.442     19.787  2.2965 0.0227865 *  
+## date2009   65.880     19.787  3.3294 0.0010535 ** 
+## date2010   66.697     19.787  3.3707 0.0009155 ***
+## date2011   76.852     19.787  3.8839 0.0001437 ***
+## date2012  106.069     19.787  5.3605 2.492e-07 ***
+## date2013  130.377     19.787  6.5889 4.622e-10 ***
+## date2014  153.367     19.787  7.7508 6.226e-13 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Total Sum of Squares:    804370
+## Residual Sum of Squares: 498820
+## R-Squared:      0.37986
+## Adj. R-Squared: 0.28786
+## F-statistic: 7.96308 on 14 and 182 DF, p-value: 4.3339e-13</code></pre>
+<p>Using a Fixed Effects model explains just under 30% of the variation we see in our model</p>
+</div>
+<div id="random-effects" class="section level5">
+<h5>Random Effects</h5>
+<pre class="r"><code>AU.ra &lt;- plm(mean~date, data = AU, model = &quot;random&quot;)
+summary(AU.ra)</code></pre>
+<pre><code>## Oneway (individual) effect Random Effect Model 
+##    (Swamy-Arora&#39;s transformation)
+## 
+## Call:
+## plm(formula = mean ~ date, data = AU, model = &quot;random&quot;)
+## 
+## Balanced Panel: n = 14, T = 15, N = 210
+## 
+## Effects:
+##                    var  std.dev share
+## idiosyncratic  2740.76    52.35 0.054
+## individual    48342.93   219.87 0.946
+## theta: 0.9386
+## 
+## Residuals:
+##      Min.   1st Qu.    Median   3rd Qu.      Max. 
+## -169.3128  -31.5876   -5.9096   21.6465  229.1669 
+## 
+## Coefficients:
+##             Estimate Std. Error z-value  Pr(&gt;|z|)    
+## (Intercept)  280.594     60.406  4.6452 3.398e-06 ***
+## date2001      13.430     19.787  0.6787 0.4973287    
+## date2002      49.486     19.787  2.5009 0.0123871 *  
+## date2003      61.328     19.787  3.0994 0.0019393 ** 
+## date2004      63.496     19.787  3.2089 0.0013324 ** 
+## date2005      50.068     19.787  2.5303 0.0113970 *  
+## date2006      54.455     19.787  2.7520 0.0059226 ** 
+## date2007      56.297     19.787  2.8451 0.0044393 ** 
+## date2008      45.442     19.787  2.2965 0.0216474 *  
+## date2009      65.880     19.787  3.3294 0.0008703 ***
+## date2010      66.697     19.787  3.3707 0.0007497 ***
+## date2011      76.852     19.787  3.8839 0.0001028 ***
+## date2012     106.069     19.787  5.3605 8.300e-08 ***
+## date2013     130.377     19.787  6.5889 4.430e-11 ***
+## date2014     153.367     19.787  7.7508 9.133e-15 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Total Sum of Squares:    840000
+## Residual Sum of Squares: 534450
+## R-Squared:      0.36375
+## Adj. R-Squared: 0.31807
+## Chisq: 111.483 on 14 DF, p-value: &lt; 2.22e-16</code></pre>
+<p>Using a Random Effects model explains just over 30% of the variation we see in our model</p>
+</div>
 </div>
 <div id="conclusions" class="section level1">
 <h1>Conclusions</h1>
-<p>What have you learned? Are there any broader implications?</p>
+<p>Indices are an interesting may of measuring trends over time and space. There are many that exist that provide us with new information every year. Creating a new index may not be too difficult conceptually, but there are challenges to building one that is effective. There should be a strong case that a combination of quantitative variables represent a changing process in the world. Next, ensuring a sufficient amount of data exists is necessary for building the strongest time-series or panel data models.</p>
 </div>
 <div id="references" class="section level1">
 <h1>References</h1>

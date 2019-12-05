@@ -6,33 +6,6 @@ subtitle: A Case Study in Data Visualization and Analysis in R
 
 # Introduction
 The UN Development Program every year publishes it's Human Development Index. The goal of this measure is to measure human development by country with respect to economic output, education level and health outcome. The goal of this project will be to reimagine such an index to account for political stability, economic stability, and economic sustainability. The index will be calculated and analyzed for nations comprising Latin America.
-
-# Materials and methods
-
-This section will describe data sources and coding methods. Before proceeding to the code and data itself however, it is important to discuss how this index will be defined.
-
-Being that the Index is a model, it will be important to understand the key assumptions it
-relies on, namely how it's inputs represent what they claim to represent. 
-
-#### We can consider these casewise:
-
-1. Political Stability - This will be represented by the level of public (or government)
-debt in a single country. The thinking here is that as public debt levels increase, a 
-nation's government will become increasingly unstable.
-
-2. Economic Stability - One of the most common macroeconomic indicators of economic 
-stability is the inflation rate. The Consumer Price Index of each country, a measure
-tracking the prices of all goods in a country intended for end consumers, will be included. An unchecked inflation rate is always a danger to any economy.
-
-3. Environmental Sustainability - The are a plethora of measure that may be used to track a nation's environmental sustainability. Although some of these measures may change over time, levels of Carbon Dioxide Emissions are always a concern. Therefore CO2 emissions by country will be included.
-
-
-Thus the general workflow proceeds as follows:
-
-* Gathering Requisite Data
-* Constructing the Index
-* Examine Trends
-
 ```{r include=FALSE}
 library(fredr)
 library(wbstats)
@@ -41,7 +14,10 @@ library(ggplot2)
 library(foreach)
 library(spData)
 library(sf)
-
+library(plm)
+library(forecast)
+library(rworldmap)
+library(ggmap)
 
 
 fredr_set_key("6b0cdd4cca87cf2616946fd1b9c3e865")
@@ -802,7 +778,53 @@ APg = rbind(APn, Par)
 APe = rbind(APg, Per)
 AU = rbind(APe, Uru)
 AU
+
+df <- NULL  
+df$country <- c("Argentina", "Bolivia", "Brazil", "Chile", "Costa Rica", "Ecuador", "Dominican Republic", "Ecuador", "El Salvador", "Mexico", "Panama", "Paraguay", "Peru", "Uruguay")
+df$code<- c("ARG", "BOL", "BRA", "CHL", "COL", "CRI", "DOM", "ECU", "SLV", "MEX", "PAN", "PRY", "PER", "URY")  
+df$mean = AU$mean
+df<-as.data.frame(df)  
+sPDF <- joinCountryData2Map( df, joinCode = "NAME", nameJoinColumn = "code")  
+
+lat.am = mapCountryData(sPDF, nameColumnToPlot="mean", mapRegion='latin america',xlim=bbox(sPDFmyCountries)[1,], ylim=bbox(sPDFmyCountries)[2,])
+
+sPDFmyCountries <- sPDF[sPDF$NAME %in% df$country,]
+k = bbox(sPDFmyCountries)
+
+get_map(location = k, maptype = "toner")
+map = get_map(location = k, maptype = "toner")
 ```
+
+
+```{r}
+ggmap(map)
+```
+
+# Materials and methods
+
+This section will describe data sources and coding methods. Before proceeding to the code and data itself however, it is important to discuss how this index will be defined.
+
+Being that the Index is a model, it will be important to understand the key assumptions it
+relies on, namely how it's inputs represent what they claim to represent. 
+
+#### We can consider these casewise:
+
+1. Political Stability - This will be represented by the level of public (or government)
+debt in a single country. The thinking here is that as public debt levels increase, a 
+nation's government will become increasingly unstable.
+
+2. Economic Stability - One of the most common macroeconomic indicators of economic 
+stability is the inflation rate. The Consumer Price Index of each country, a measure
+tracking the prices of all goods in a country intended for end consumers, will be included. An unchecked inflation rate is always a danger to any economy.
+
+3. Environmental Sustainability - The are a plethora of measure that may be used to track a nation's environmental sustainability. Although some of these measures may change over time, levels of Carbon Dioxide Emissions are always a concern. Therefore CO2 emissions by country will be included.
+
+
+Thus the general workflow proceeds as follows:
+
+* Gathering Requisite Data
+* Constructing the Index
+* Examine Trends
 
 
 
@@ -816,6 +838,10 @@ library(ggplot2)
 library(foreach)
 library(spData)
 library(sf)
+library(plm)
+library(forecast)
+library(rworldmap)
+library(ggmap)
 ```
 
 ### Download and clean data for Political Stability
@@ -883,36 +909,42 @@ str(AU)
 head(AU)
 ```
 
-data %>% 
-  slice(1:10) %>% #show only 1:n rows
-  kable(digits=2,align="c")%>% #make table and round to two digits
-  kable_styling(bootstrap_options = 
-                  c("striped", "hover", "condensed", "responsive")) #apply other formatting
-
-
-Add any additional processing steps here.
 
 # Results
 
-Show tables, plots, etc. and describe them.
-
-{r, fig.width=6, fig.height=3, fig.cap="Map of completely random data"}
-m <- leaflet(data) %>% 
-  addTiles() %>% 
-  addCircleMarkers(~x, ~y, radius = ~size,color = ~as.factor(category)) %>% 
-  addPopups(~x[2], ~y[2], "Random popup")
-m  # a map with the default OSM tile layer
+#####First let's examine what the individual country level trends look like:
+```{r}
+ggplot(AU, aes(date, mean, col = country))+
+  geom_point()+
+  geom_line()+
+  facet_wrap(~country)
 ```
+Note that as the indicator goes up, utility goes down.
 
+Next is it possible to identify a trend? 
 
-``{r}
-data %>% 
-  ggplot(aes(x=x,y=y,col=category))+
-  geom_point()
+There isn't enough data yet to build a time-series model of any one single country.
+However, if we use a panel data model, it is possible to extend our analysis across borders.
+
+##### Fixed Effects
+```{r}
+AU.fe <- plm(mean~date, data = AU, model = "within")
+summary(AU.fe)
 ```
+Using a Fixed Effects model explains just under 30% of the variation we see in our model
+
+##### Random Effects
+```{r}
+AU.ra <- plm(mean~date, data = AU, model = "random")
+summary(AU.ra)
+```
+Using a Random Effects model explains just over 30% of the variation we see in our model
+
+
+
 
 # Conclusions
 
-What have you learned?  Are there any broader implications?
+Indices are an interesting may of measuring trends over time and space. There are many that exist that provide us with new information every year. Creating a new index may not be too difficult conceptually, but there are challenges to building one that is effective. There should be a strong case that a combination of quantitative variables represent a changing process in the world. Next, ensuring a sufficient amount of data exists is necessary for building the strongest time-series or panel data models.
 
 # References
