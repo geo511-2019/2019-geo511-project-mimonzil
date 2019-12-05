@@ -5,25 +5,31 @@ subtitle: A Case Study in Data Visualization and Analysis in R
 ---
 
 # Introduction
-My really awesome and complete introduction will go here.  
+The UN Development Program every year publishes it's Human Development Index. The goal of this measure is to measure human development by country with respect to economic output, education level and health outcome. The goal of this project will be to reimagine such an index to account for political stability, economic stability, and economic sustainability. The index will be calculated and analyzed for nations comprising Latin America.
 
 # Materials and methods
 
-Narrative and most code will go here.  Describe what you are doing and show how to do it (with code).
+This section will describe data sources and coding methods. Before proceeding to the code and data itself however, it is important to discuss how this index will be defined.
 
-You can do bullets like this:
+Being that the Index is a model, it will be important to understand the key assumptions it
+relies on, namely how it's inputs represent what they claim to represent. 
 
-* The first most important thing
-* The second most important thing
-* The third most important thing
+## We can consider these casewise:
 
-You can do numbers like this:
+1. Political Stability - This will be represented by the level of public (or government)
+debt in a single country. The thinking here is that as public debt levels increase, a 
+nation's government will become increasingly unstable.
+2. Economic Stability - One of the most common macroeconomic indicators of economic 
+stability is the inflation rate. The Consumer Price Index of each country, a measure
+tracking the prices of all goods in a country intended for end consumers, will be included. An unchecked inflation rate is always a danger to any economy.
+3. Environmental Sustainability - The are a plethora of measure that may be used to track a nation's environmental sustainability. Although some of these measures may change over time, levels of Carbon Dioxide Emissions are always a concern. Therefore CO2 emissions by country will be included.
 
-1. The first most important thing
-2. The second most important thing
-3. The third most important thing
 
-See [http://rmarkdown.rstudio.com/](http://rmarkdown.rstudio.com/) for all the amazing things you can do.
+Thus the general workflow proceeds as follows:
+
+* Gathering Requisite Data
+* Constructing the Index
+* Examine Trends
 
 
 Here's my first code chunk.
@@ -31,12 +37,16 @@ Here's my first code chunk.
 1+2
 ```
 
-Load any required packages in a code chunk (you may need to install some packages):
+Here's a quick look at the packages used for this project
 
 ```{r, message=F, warning=F}
-library(tidyverse)
-library(leaflet)
-library(kableExtra)
+library(fredr)
+library(wbstats)
+library(dplyr)
+library(ggplot2)
+library(foreach)
+library(spData)
+library(sf)
 knitr::opts_chunk$set(cache=TRUE)  # cache the results for quick compiling
 ```
 

@@ -1,13 +1,12 @@
 setwd('/Users/mikemonzillo/UB Graduate School/GEO 511 - Spatial Data Science/GEO 511 - Final Project')
 library(fredr)
-library(WDI)
+library(wbstats)
 library(dplyr)
 library(ggplot2)
 library(foreach)
 library(spData)
 library(sf)
-library(GISTools)
-library(tibble)
+
 
 
 fredr_set_key("6b0cdd4cca87cf2616946fd1b9c3e865")
@@ -313,8 +312,6 @@ ggplot(Uru.debt.1, aes(date, Uru.debt))+
 
 
 # Environmental Sustainability - Indicator = CO2 Emissions
-
-library(wbstats)
 
 wbsearch(pattern = " CO2 emission")
 
