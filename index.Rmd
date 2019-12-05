@@ -1,7 +1,7 @@
 ---
-title: "A New Development Index in Latin American Countries"
+title: "A New Development Index"
 author: Michael Monzillo
-subtitle: A Study in Data Visualization and Analysis in R
+subtitle: A Case Study in Data Visualization and Analysis in R
 ---
 
 # Introduction
