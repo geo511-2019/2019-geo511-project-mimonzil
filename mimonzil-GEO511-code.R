@@ -1,4 +1,3 @@
-setwd('/Users/mikemonzillo/UB Graduate School/GEO 511 - Spatial Data Science/GEO 511 - Final Project')
 library(fredr)
 library(wbstats)
 library(dplyr)
