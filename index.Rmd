@@ -14,14 +14,16 @@ This section will describe data sources and coding methods. Before proceeding to
 Being that the Index is a model, it will be important to understand the key assumptions it
 relies on, namely how it's inputs represent what they claim to represent. 
 
-## We can consider these casewise:
+#### We can consider these casewise:
 
 1. Political Stability - This will be represented by the level of public (or government)
 debt in a single country. The thinking here is that as public debt levels increase, a 
 nation's government will become increasingly unstable.
+
 2. Economic Stability - One of the most common macroeconomic indicators of economic 
 stability is the inflation rate. The Consumer Price Index of each country, a measure
 tracking the prices of all goods in a country intended for end consumers, will be included. An unchecked inflation rate is always a danger to any economy.
+
 3. Environmental Sustainability - The are a plethora of measure that may be used to track a nation's environmental sustainability. Although some of these measures may change over time, levels of Carbon Dioxide Emissions are always a concern. Therefore CO2 emissions by country will be included.
 
 
@@ -32,12 +34,8 @@ Thus the general workflow proceeds as follows:
 * Examine Trends
 
 
-Here's my first code chunk.
-```{r}
-1+2
-```
 
-Here's a quick look at the packages used for this project
+#### Here's a quick look at the packages used for this project
 
 ```{r, message=F, warning=F}
 library(fredr)
@@ -47,28 +45,77 @@ library(ggplot2)
 library(foreach)
 library(spData)
 library(sf)
-knitr::opts_chunk$set(cache=TRUE)  # cache the results for quick compiling
 ```
 
-## Download and clean all required data
+### Download and clean data for Political Stability
 ```{r}
 n=20
-data=data.frame(x=runif(n,-180,180),
-                y=runif(n,-60,60),
-                size = runif(n, 5, 20),
-                category = factor(
-                  sample(letters[1:5], n, replace = TRUE)
-                  ),
-                value = rnorm(n))
+Arg = fredr_series_search_text("Argentina debt GDP")
+Arg$title
+Arg$id[5]
+Arg.debt = fredr("DDDM07ARA156NWDB")
+dates = c(1999:2014)
+dates.1 = c(1980:2017)
+debtnames = c("date", "debt")
+Arg.debt.1 = cbind(dates.1, Arg.debt) %>%
+  filter(dates.1 >= 2000) %>%
+  filter(dates.1 <= 2014) %>%
+  dplyr::select(dates.1, value) %>%
+  arrange((desc(dates.1)))
+colnames(Arg.debt.1) <- c("date", "Arg.debt")
+
 ```
 
-```{r, results='asis'}
+### Download and clean data for Economic Stability
+```{r}
+wbsearch(pattern = " CO2 emission")
+
+CO2 = wb(indicator = "EN.ATM.CO2E.KT")
+
+Arg.CO2 = CO2 %>%
+  filter(country == "Argentina") %>%
+  filter(date >= 2000) %>%
+  dplyr::select(date, value) %>%
+  arrange((desc(date)))
+colnames(Arg.CO2) <- c("date1", "Arg.CO2")
+```
+
+### Download and clean data for Environmental Sustainability
+```{r}
+Arg.CPI = fredr_series_search_text("Argentina CPI")
+Arg.CPI$title
+Arg.CPI$id[2]
+Arg.CPI = fredr("DDOE01ARA086NWDB")
+CPIdates.1 = c(1960:2014)
+Arg.CPI.1 = cbind(CPIdates.1, Arg.CPI) %>%
+  filter(CPIdates.1 >= 2000) %>%
+  filter(CPIdates.1 <= 2014) %>%
+  dplyr::select(CPIdates.1, value) %>%
+  arrange((desc(CPIdates.1)))
+colnames(Arg.CPI.1) <- c("date2", "Arg.CPI")
+```
+
+#### With all of the necessary data collected, it is now possible to construct the Development Index for each country 
+
+
+```{r}
+Arg = cbind(Arg.debt.1, Arg.CO2) 
+Arg = cbind(Arg, Arg.CPI.1) %>%
+  dplyr::select(date, Arg.debt, Arg.CO2, Arg.CPI)
+Arg.mean= ((Arg$Arg.debt*Arg$Arg.CO2*Arg$Arg.CPI)^(1/3))
+Arg = cbind(Arg, Arg.mean)
+```
+Note the object Arg.mean. This variable is the cubed root of a product of three inputs. To calculate this mean debt level, CO2 emisssions, and the CPI are all multiplied together. Because there are three inputs, the cubed root is taken. This is called a geometric mean, as opposed to the familiar arthimetic mean. The reason for using the geometric mean is that it is the same measure the UNDP uses to calculate the Human Development Index
+
+#### Binding Countries by row yields the following table
+
+
 data %>% 
   slice(1:10) %>% #show only 1:n rows
   kable(digits=2,align="c")%>% #make table and round to two digits
   kable_styling(bootstrap_options = 
                   c("striped", "hover", "condensed", "responsive")) #apply other formatting
-```
+
 
 Add any additional processing steps here.
 
@@ -76,7 +123,7 @@ Add any additional processing steps here.
 
 Show tables, plots, etc. and describe them.
 
-```{r, fig.width=6, fig.height=3, fig.cap="Map of completely random data"}
+{r, fig.width=6, fig.height=3, fig.cap="Map of completely random data"}
 m <- leaflet(data) %>% 
   addTiles() %>% 
   addCircleMarkers(~x, ~y, radius = ~size,color = ~as.factor(category)) %>% 
@@ -85,7 +132,7 @@ m  # a map with the default OSM tile layer
 ```
 
 
-```{r}
+``{r}
 data %>% 
   ggplot(aes(x=x,y=y,col=category))+
   geom_point()

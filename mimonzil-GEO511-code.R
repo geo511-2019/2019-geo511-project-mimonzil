@@ -317,8 +317,6 @@ wbsearch(pattern = " CO2 emission")
 
 CO2 = wb(indicator = "EN.ATM.CO2E.KT")
 
-CO2
-
 Arg.CO2 = CO2 %>%
   filter(country == "Argentina") %>%
   filter(date >= 2000) %>%
@@ -871,6 +869,7 @@ APg = rbind(APn, Par)
 APe = rbind(APg, Per)
 AU = rbind(APe, Uru)
 AU
+class(AU)
 
 summary(AU)
 

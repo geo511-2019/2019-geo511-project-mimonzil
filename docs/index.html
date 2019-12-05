@@ -15,7 +15,7 @@
 
 <title>A New Development Index</title>
 
-<script src="site_libs/jquery-1.12.4/jquery.min.js"></script>
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link href="site_libs/bootstrap-3.3.5/css/simplex.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
@@ -27,15 +27,6 @@
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<script src="site_libs/kePrint-0.0.1/kePrint.js"></script>
-<script src="site_libs/htmlwidgets-1.5.1/htmlwidgets.js"></script>
-<link href="site_libs/leaflet-1.3.1/leaflet.css" rel="stylesheet" />
-<script src="site_libs/leaflet-1.3.1/leaflet.js"></script>
-<link href="site_libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet" />
-<script src="site_libs/Proj4Leaflet-1.0.1/proj4-compressed.js"></script>
-<script src="site_libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
-<link href="site_libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet" />
-<script src="site_libs/leaflet-binding-2.0.3/leaflet.js"></script>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -388,12 +379,12 @@ div.tocify {
 <h1>Materials and methods</h1>
 <p>This section will describe data sources and coding methods. Before proceeding to the code and data itself however, it is important to discuss how this index will be defined.</p>
 <p>Being that the Index is a model, it will be important to understand the key assumptions it relies on, namely how it’s inputs represent what they claim to represent.</p>
-<div id="we-can-consider-these-casewise" class="section level2">
-<h2>We can consider these casewise:</h2>
+<div id="we-can-consider-these-casewise" class="section level4">
+<h4>We can consider these casewise:</h4>
 <ol style="list-style-type: decimal">
-<li>Political Stability - This will be represented by the level of public (or government) debt in a single country. The thinking here is that as public debt levels increase, a nation’s government will become increasingly unstable.</li>
-<li>Economic Stability - One of the most common macroeconomic indicators of economic stability is the inflation rate. The Consumer Price Index of each country, a measure tracking the prices of all goods in a country intended for end consumers, will be included. An unchecked inflation rate is always a danger to any economy.</li>
-<li>Environmental Sustainability - The are a plethora of measure that may be used to track a nation’s environmental sustainability. Although some of these measures may change over time, levels of Carbon Dioxide Emissions are always a concern. Therefore CO2 emissions by country will be included.</li>
+<li><p>Political Stability - This will be represented by the level of public (or government) debt in a single country. The thinking here is that as public debt levels increase, a nation’s government will become increasingly unstable.</p></li>
+<li><p>Economic Stability - One of the most common macroeconomic indicators of economic stability is the inflation rate. The Consumer Price Index of each country, a measure tracking the prices of all goods in a country intended for end consumers, will be included. An unchecked inflation rate is always a danger to any economy.</p></li>
+<li><p>Environmental Sustainability - The are a plethora of measure that may be used to track a nation’s environmental sustainability. Although some of these measures may change over time, levels of Carbon Dioxide Emissions are always a concern. Therefore CO2 emissions by country will be included.</p></li>
 </ol>
 <p>Thus the general workflow proceeds as follows:</p>
 <ul>
@@ -401,249 +392,213 @@ div.tocify {
 <li>Constructing the Index</li>
 <li>Examine Trends</li>
 </ul>
-<p>Here’s my first code chunk.</p>
-<pre class="r"><code>1+2</code></pre>
-<pre><code>## [1] 3</code></pre>
-<p>Here’s a quick look at the packages used for this project</p>
+</div>
+<div id="heres-a-quick-look-at-the-packages-used-for-this-project" class="section level4">
+<h4>Here’s a quick look at the packages used for this project</h4>
 <pre class="r"><code>library(fredr)
 library(wbstats)
 library(dplyr)
 library(ggplot2)
 library(foreach)
 library(spData)
-library(sf)
-knitr::opts_chunk$set(cache=TRUE)  # cache the results for quick compiling</code></pre>
+library(sf)</code></pre>
 </div>
-<div id="download-and-clean-all-required-data" class="section level2">
-<h2>Download and clean all required data</h2>
+<div id="download-and-clean-data-for-political-stability" class="section level3">
+<h3>Download and clean data for Political Stability</h3>
 <pre class="r"><code>n=20
-data=data.frame(x=runif(n,-180,180),
-                y=runif(n,-60,60),
-                size = runif(n, 5, 20),
-                category = factor(
-                  sample(letters[1:5], n, replace = TRUE)
-                  ),
-                value = rnorm(n))</code></pre>
-<pre class="r"><code>data %&gt;% 
-  slice(1:10) %&gt;% #show only 1:n rows
-  kable(digits=2,align=&quot;c&quot;)%&gt;% #make table and round to two digits
-  kable_styling(bootstrap_options = 
-                  c(&quot;striped&quot;, &quot;hover&quot;, &quot;condensed&quot;, &quot;responsive&quot;)) #apply other formatting</code></pre>
-<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
-<thead>
-<tr>
-<th style="text-align:center;">
-x
-</th>
-<th style="text-align:center;">
-y
-</th>
-<th style="text-align:center;">
-size
-</th>
-<th style="text-align:center;">
-category
-</th>
-<th style="text-align:center;">
-value
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:center;">
-176.40
-</td>
-<td style="text-align:center;">
--28.19
-</td>
-<td style="text-align:center;">
-9.58
-</td>
-<td style="text-align:center;">
-c
-</td>
-<td style="text-align:center;">
-0.19
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-81.52
-</td>
-<td style="text-align:center;">
--54.82
-</td>
-<td style="text-align:center;">
-7.70
-</td>
-<td style="text-align:center;">
-a
-</td>
-<td style="text-align:center;">
--0.47
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-179.96
-</td>
-<td style="text-align:center;">
--24.61
-</td>
-<td style="text-align:center;">
-12.17
-</td>
-<td style="text-align:center;">
-d
-</td>
-<td style="text-align:center;">
--0.61
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
--68.00
-</td>
-<td style="text-align:center;">
--53.26
-</td>
-<td style="text-align:center;">
-17.98
-</td>
-<td style="text-align:center;">
-a
-</td>
-<td style="text-align:center;">
-0.16
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-128.17
-</td>
-<td style="text-align:center;">
--25.90
-</td>
-<td style="text-align:center;">
-10.27
-</td>
-<td style="text-align:center;">
-d
-</td>
-<td style="text-align:center;">
--0.59
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-172.84
-</td>
-<td style="text-align:center;">
-33.79
-</td>
-<td style="text-align:center;">
-12.33
-</td>
-<td style="text-align:center;">
-b
-</td>
-<td style="text-align:center;">
--1.18
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
--147.08
-</td>
-<td style="text-align:center;">
--0.25
-</td>
-<td style="text-align:center;">
-19.71
-</td>
-<td style="text-align:center;">
-b
-</td>
-<td style="text-align:center;">
-0.57
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-75.69
-</td>
-<td style="text-align:center;">
--4.92
-</td>
-<td style="text-align:center;">
-6.63
-</td>
-<td style="text-align:center;">
-d
-</td>
-<td style="text-align:center;">
--0.28
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
--99.01
-</td>
-<td style="text-align:center;">
--45.27
-</td>
-<td style="text-align:center;">
-9.09
-</td>
-<td style="text-align:center;">
-e
-</td>
-<td style="text-align:center;">
--1.88
-</td>
-</tr>
-<tr>
-<td style="text-align:center;">
-78.64
-</td>
-<td style="text-align:center;">
--43.30
-</td>
-<td style="text-align:center;">
-12.39
-</td>
-<td style="text-align:center;">
-a
-</td>
-<td style="text-align:center;">
-0.82
-</td>
-</tr>
-</tbody>
-</table>
+Arg = fredr_series_search_text(&quot;Argentina debt GDP&quot;)
+Arg$title</code></pre>
+<pre><code>##  [1] &quot;General government gross debt for Argentina&quot;                                        
+##  [2] &quot;General Government Gross Debt for Argentina&quot;                                        
+##  [3] &quot;Total Credit to Private Non-Financial Sector, Adjusted for Breaks, for Argentina&quot;   
+##  [4] &quot;Total Credit to Private Non-Financial Sector, Adjusted for Breaks, for Argentina&quot;   
+##  [5] &quot;Outstanding Total International Debt Securities to GDP for Argentina&quot;               
+##  [6] &quot;Outstanding Domestic Public Debt Securities to GDP for Argentina&quot;                   
+##  [7] &quot;Outstanding International Public Debt Securities to GDP for Argentina&quot;              
+##  [8] &quot;Total Credit to Households and NPISHs, Adjusted for Breaks, for Argentina&quot;          
+##  [9] &quot;Total Credit to Households and NPISHs, Adjusted for Breaks, for Argentina&quot;          
+## [10] &quot;Gross Portfolio Debt Liabilities to GDP for Argentina&quot;                              
+## [11] &quot;Projection of General government gross debt for Argentina&quot;                          
+## [12] &quot;Total Credit to Non-Financial Sector, Adjusted for Breaks, for Argentina&quot;           
+## [13] &quot;Total Credit to Non-Financial Sector, Adjusted for Breaks, for Argentina&quot;           
+## [14] &quot;Total Credit to General Government, Adjusted for Breaks, for Argentina&quot;             
+## [15] &quot;Outstanding Domestic Private Debt Securities to GDP for Argentina&quot;                  
+## [16] &quot;Outstanding International Private Debt Securities to GDP for Argentina&quot;             
+## [17] &quot;Nominal Total Credit to General Government, Adjusted for Breaks, for Argentina&quot;     
+## [18] &quot;Loans from Non-Resident Banks, Net, to GDP for Argentina&quot;                           
+## [19] &quot;Total Credit to Non-Financial Corporations, Adjusted for Breaks, for Argentina&quot;     
+## [20] &quot;Total Credit to Non-Financial Corporations, Adjusted for Breaks, for Argentina&quot;     
+## [21] &quot;Credit to Private Non-Financial Sector by Banks, Adjusted for Breaks, for Argentina&quot;
+## [22] &quot;Credit to Private Non-Financial Sector by Banks, Adjusted for Breaks, for Argentina&quot;</code></pre>
+<pre class="r"><code>Arg$id[5]</code></pre>
+<pre><code>## [1] &quot;DDDM07ARA156NWDB&quot;</code></pre>
+<pre class="r"><code>Arg.debt = fredr(&quot;DDDM07ARA156NWDB&quot;)
+dates = c(1999:2014)
+dates.1 = c(1980:2017)
+debtnames = c(&quot;date&quot;, &quot;debt&quot;)
+Arg.debt.1 = cbind(dates.1, Arg.debt) %&gt;%
+  filter(dates.1 &gt;= 2000) %&gt;%
+  filter(dates.1 &lt;= 2014) %&gt;%
+  dplyr::select(dates.1, value) %&gt;%
+  arrange((desc(dates.1)))
+colnames(Arg.debt.1) &lt;- c(&quot;date&quot;, &quot;Arg.debt&quot;)</code></pre>
+</div>
+<div id="download-and-clean-data-for-economic-stability" class="section level3">
+<h3>Download and clean data for Economic Stability</h3>
+<pre class="r"><code>wbsearch(pattern = &quot; CO2 emission&quot;)</code></pre>
+<pre><code>##         indicatorID
+## 5521 EN.CO2.ETOT.ZS
+##                                                                                   indicator
+## 5521 CO2 emissions from electricity and heat production, total (% of total fuel combustion)</code></pre>
+<pre class="r"><code>CO2 = wb(indicator = &quot;EN.ATM.CO2E.KT&quot;)
+
+Arg.CO2 = CO2 %&gt;%
+  filter(country == &quot;Argentina&quot;) %&gt;%
+  filter(date &gt;= 2000) %&gt;%
+  dplyr::select(date, value) %&gt;%
+  arrange((desc(date)))
+colnames(Arg.CO2) &lt;- c(&quot;date1&quot;, &quot;Arg.CO2&quot;)</code></pre>
+</div>
+<div id="download-and-clean-data-for-environmental-sustainability" class="section level3">
+<h3>Download and clean data for Environmental Sustainability</h3>
+<pre class="r"><code>Arg.CPI = fredr_series_search_text(&quot;Argentina CPI&quot;)
+Arg.CPI$title</code></pre>
+<pre><code>##   [1] &quot;Inflation, consumer prices for Argentina&quot;                                                                                     
+##   [2] &quot;Consumer Price Index for Argentina&quot;                                                                                           
+##   [3] &quot;Consumer Price Index for Argentina&quot;                                                                                           
+##   [4] &quot;Consumer Price Index: All items: Total: Total for Argentina&quot;                                                                  
+##   [5] &quot;Consumer Price Index: All items: Total: Total for Argentina&quot;                                                                  
+##   [6] &quot;Consumer Price Index: All items: Total: Total for Argentina&quot;                                                                  
+##   [7] &quot;Consumer Price Index: All items: Total: Total for Argentina&quot;                                                                  
+##   [8] &quot;Consumer Price Index: All items: Total: Total for Argentina&quot;                                                                  
+##   [9] &quot;Consumer Price Index: All items: Total: Total for Argentina&quot;                                                                  
+##  [10] &quot;Consumer Price Index: OECD Groups: Goods: Total for Argentina&quot;                                                                
+##  [11] &quot;Consumer Price Index: OECD Groups: Goods: Total for Argentina&quot;                                                                
+##  [12] &quot;Consumer Price Index: OECD Groups: Goods: Total for Argentina&quot;                                                                
+##  [13] &quot;Consumer Price Index: OECD Groups: Goods: Total for Argentina&quot;                                                                
+##  [14] &quot;Consumer Price Index: Education (COICOP 10): Total: Total for Argentina&quot;                                                      
+##  [15] &quot;Consumer Price Index: Education (COICOP 10): Total: Total for Argentina&quot;                                                      
+##  [16] &quot;Consumer Price Index: Communication (COICOP 08): Total: Total for Argentina&quot;                                                  
+##  [17] &quot;Consumer Price Index: Communication (COICOP 08): Total: Total for Argentina&quot;                                                  
+##  [18] &quot;Consumer Price Index: Recreation and culture (COICOP 09): Total: Total for Argentina&quot;                                         
+##  [19] &quot;Consumer Price Index: Restaurants and hotels (COICOP 11): Total: Total for Argentina&quot;                                         
+##  [20] &quot;Consumer Price Index: Clothing and footwear (COICOP 03): Total: Total for Argentina&quot;                                          
+##  [21] &quot;Consumer Price Index: Alcoholic beverages, tobacco and narcotics (COICOP 02): Total: Total for Argentina&quot;                     
+##  [22] &quot;Consumer Price Index: Alcoholic beverages, tobacco and narcotics (COICOP 02): Total: Total for Argentina&quot;                     
+##  [23] &quot;Consumer Price Index: Education (COICOP 10): Total: Total for Argentina&quot;                                                      
+##  [24] &quot;Consumer Price Index: Education (COICOP 10): Total: Total for Argentina&quot;                                                      
+##  [25] &quot;Consumer Price Index: Communication (COICOP 08): Total: Total for Argentina&quot;                                                  
+##  [26] &quot;Consumer Price Index: Communication (COICOP 08): Total: Total for Argentina&quot;                                                  
+##  [27] &quot;Consumer Price Index: Food and non-Alcoholic beverages (COICOP 01): Total: Total for Argentina&quot;                               
+##  [28] &quot;Consumer Price Index: Education (COICOP 10): Total: Total for Argentina&quot;                                                      
+##  [29] &quot;Consumer Price Index: Education (COICOP 10): Total: Total for Argentina&quot;                                                      
+##  [30] &quot;Consumer Price Index: Communication (COICOP 08): Total: Total for Argentina&quot;                                                  
+##  [31] &quot;Consumer Price Index: Communication (COICOP 08): Total: Total for Argentina&quot;                                                  
+##  [32] &quot;Consumer Price Index: Recreation and culture (COICOP 09): Total: Total for Argentina&quot;                                         
+##  [33] &quot;Consumer Price Index: Restaurants and hotels (COICOP 11): Total: Total for Argentina&quot;                                         
+##  [34] &quot;Consumer Price Index: Clothing and footwear (COICOP 03): Total: Total for Argentina&quot;                                          
+##  [35] &quot;Consumer Price Index: Recreation and culture (COICOP 09): Total: Total for Argentina&quot;                                         
+##  [36] &quot;Consumer Price Index: Restaurants and hotels (COICOP 11): Total: Total for Argentina&quot;                                         
+##  [37] &quot;Consumer Price Index: Clothing and footwear (COICOP 03): Total: Total for Argentina&quot;                                          
+##  [38] &quot;Consumer Price Index: Clothing and footwear (COICOP 03): Total: Total for Argentina&quot;                                          
+##  [39] &quot;Consumer Price Index: Alcoholic beverages, tobacco and narcotics (COICOP 02): Total: Total for Argentina&quot;                     
+##  [40] &quot;Consumer Price Index: Food and non-Alcoholic beverages (COICOP 01): Total: Total for Argentina&quot;                               
+##  [41] &quot;Consumer Price Index: Food and non-Alcoholic beverages (COICOP 01): Total: Total for Argentina&quot;                               
+##  [42] &quot;Consumer Price Index: Recreation and culture (COICOP 09): Total: Total for Argentina&quot;                                         
+##  [43] &quot;Consumer Price Index: Restaurants and hotels (COICOP 11): Total: Total for Argentina&quot;                                         
+##  [44] &quot;Consumer Price Index: Restaurants and hotels (COICOP 11): Total: Total for Argentina&quot;                                         
+##  [45] &quot;Consumer Price Index: Clothing and footwear (COICOP 03): Total: Total for Argentina&quot;                                          
+##  [46] &quot;Consumer Price Index: Alcoholic beverages, tobacco and narcotics (COICOP 02): Total: Total for Argentina&quot;                     
+##  [47] &quot;Consumer Price Index: Food and non-Alcoholic beverages (COICOP 01): Total: Total for Argentina&quot;                               
+##  [48] &quot;Consumer Price Index: Recreation and culture (COICOP 09): Total: Total for Argentina&quot;                                         
+##  [49] &quot;Consumer Price Index: Recreation and culture (COICOP 09): Total: Total for Argentina&quot;                                         
+##  [50] &quot;Consumer Price Index: Restaurants and hotels (COICOP 11): Total: Total for Argentina&quot;                                         
+##  [51] &quot;Consumer Price Index: Clothing and footwear (COICOP 03): Total: Total for Argentina&quot;                                          
+##  [52] &quot;Consumer Price Index: Food and non-Alcoholic beverages (COICOP 01): Total: Total for Argentina&quot;                               
+##  [53] &quot;Consumer Price Index: Alcoholic beverages, tobacco and narcotics (COICOP 02): Total: Total for Argentina&quot;                     
+##  [54] &quot;Consumer Price Index: Alcoholic beverages, tobacco and narcotics (COICOP 02): Total: Total for Argentina&quot;                     
+##  [55] &quot;Consumer Price Index: Food and non-Alcoholic beverages (COICOP 01): Total: Total for Argentina&quot;                               
+##  [56] &quot;Consumer Price Index: Health (COICOP 06): Total: Total for Argentina&quot;                                                         
+##  [57] &quot;Consumer Price Index: Health (COICOP 06): Total: Total for Argentina&quot;                                                         
+##  [58] &quot;Consumer Price Index: Health (COICOP 06): Total: Total for Argentina&quot;                                                         
+##  [59] &quot;Consumer Price Index: Health (COICOP 06): Total: Total for Argentina&quot;                                                         
+##  [60] &quot;Consumer Price Index: Health (COICOP 06): Total: Total for Argentina&quot;                                                         
+##  [61] &quot;Consumer Price Index: Health (COICOP 06): Total: Total for Argentina&quot;                                                         
+##  [62] &quot;Consumer Price Index: Furnishings, household equip. and routine household maintenance (COICOP 05): Total: Total for Argentina&quot;
+##  [63] &quot;Consumer Price Index: Furnishings, household equip. and routine household maintenance (COICOP 05): Total: Total for Argentina&quot;
+##  [64] &quot;Consumer Price Index: Furnishings, household equip. and routine household maintenance (COICOP 05): Total: Total for Argentina&quot;
+##  [65] &quot;Consumer Price Index: Furnishings, household equip. and routine household maintenance (COICOP 05): Total: Total for Argentina&quot;
+##  [66] &quot;Consumer Price Index: Furnishings, household equip. and routine household maintenance (COICOP 05): Total: Total for Argentina&quot;
+##  [67] &quot;Consumer Price Index: Furnishings, household equip. and routine household maintenance (COICOP 05): Total: Total for Argentina&quot;
+##  [68] &quot;Consumer Price Index: OECD Groups: Services: Total for Argentina&quot;                                                             
+##  [69] &quot;Consumer Price Index: OECD Groups: Services: Total for Argentina&quot;                                                             
+##  [70] &quot;Consumer Price Index: Transport (COICOP 07): Total: Total for Argentina&quot;                                                      
+##  [71] &quot;Consumer Price Index: Transport (COICOP 07): Total: Total for Argentina&quot;                                                      
+##  [72] &quot;Consumer Price Index: Transport (COICOP 07): Total: Total for Argentina&quot;                                                      
+##  [73] &quot;Consumer Price Index: Transport (COICOP 07): Total: Total for Argentina&quot;                                                      
+##  [74] &quot;Consumer Price Index: OECD Groups: Services: Total for Argentina&quot;                                                             
+##  [75] &quot;Consumer Price Index: OECD Groups: Services: Total for Argentina&quot;                                                             
+##  [76] &quot;Consumer Price Index: Housing, water, electricity, gas and other fuels (COICOP 04): Total: Total for Argentina&quot;               
+##  [77] &quot;Consumer Price Index: Housing, water, electricity, gas and other fuels (COICOP 04): Total: Total for Argentina&quot;               
+##  [78] &quot;Consumer Price Index: Transport (COICOP 07): Total: Total for Argentina&quot;                                                      
+##  [79] &quot;Consumer Price Index: Transport (COICOP 07): Total: Total for Argentina&quot;                                                      
+##  [80] &quot;Consumer Price Index: Miscellaneous goods and services (COICOP 12): Total: Total for Argentina&quot;                               
+##  [81] &quot;Consumer Price Index: Miscellaneous goods and services (COICOP 12): Total: Total for Argentina&quot;                               
+##  [82] &quot;Consumer Price Index: Housing, water, electricity, gas and other fuels (COICOP 04): Total: Total for Argentina&quot;               
+##  [83] &quot;Consumer Price Index: Housing, water, electricity, gas and other fuels (COICOP 04): Total: Total for Argentina&quot;               
+##  [84] &quot;Consumer Price Index: Miscellaneous goods and services (COICOP 12): Total: Total for Argentina&quot;                               
+##  [85] &quot;Consumer Price Index: Miscellaneous goods and services (COICOP 12): Total: Total for Argentina&quot;                               
+##  [86] &quot;Consumer Price Index: Housing, water, electricity, gas and other fuels (COICOP 04): Total: Total for Argentina&quot;               
+##  [87] &quot;Consumer Price Index: Housing, water, electricity, gas and other fuels (COICOP 04): Total: Total for Argentina&quot;               
+##  [88] &quot;Consumer Price Index: Miscellaneous goods and services (COICOP 12): Total: Total for Argentina&quot;                               
+##  [89] &quot;Consumer Price Index: Miscellaneous goods and services (COICOP 12): Total: Total for Argentina&quot;                               
+##  [90] &quot;Bank Deposits to GDP for Argentina&quot;                                                                                           
+##  [91] &quot;Stock Market Capitalization to GDP for Argentina&quot;                                                                             
+##  [92] &quot;Outstanding Total International Debt Securities to GDP for Argentina&quot;                                                         
+##  [93] &quot;Central Bank Assets to GDP for Argentina&quot;                                                                                     
+##  [94] &quot;Private Credit by Deposit Money Banks and Other Financial Institutions to GDP for Argentina&quot;                                  
+##  [95] &quot;Private Credit by Deposit Money Banks to GDP for Argentina&quot;                                                                   
+##  [96] &quot;Liquid Liabilities to GDP for Argentina&quot;                                                                                      
+##  [97] &quot;Deposit Money Bank Assets to GDP for Argentina&quot;                                                                               
+##  [98] &quot;Stock Market Turnover Ratio (Value Traded/Capitalization) for Argentina&quot;                                                      
+##  [99] &quot;Financial System Deposits to GDP for Argentina&quot;                                                                               
+## [100] &quot;Non-Bank Financial Institutions&#39; Assets to GDP for Argentina&quot;</code></pre>
+<pre class="r"><code>Arg.CPI$id[2]</code></pre>
+<pre><code>## [1] &quot;DDOE01ARA086NWDB&quot;</code></pre>
+<pre class="r"><code>Arg.CPI = fredr(&quot;DDOE01ARA086NWDB&quot;)
+CPIdates.1 = c(1960:2014)
+Arg.CPI.1 = cbind(CPIdates.1, Arg.CPI) %&gt;%
+  filter(CPIdates.1 &gt;= 2000) %&gt;%
+  filter(CPIdates.1 &lt;= 2014) %&gt;%
+  dplyr::select(CPIdates.1, value) %&gt;%
+  arrange((desc(CPIdates.1)))
+colnames(Arg.CPI.1) &lt;- c(&quot;date2&quot;, &quot;Arg.CPI&quot;)</code></pre>
+<div id="with-all-of-the-necessary-data-collected-it-is-now-possible-to-construct-the-development-index-for-each-country" class="section level4">
+<h4>With all of the necessary data collected, it is now possible to construct the Development Index for each country</h4>
+<pre class="r"><code>Arg = cbind(Arg.debt.1, Arg.CO2) 
+Arg = cbind(Arg, Arg.CPI.1) %&gt;%
+  dplyr::select(date, Arg.debt, Arg.CO2, Arg.CPI)
+Arg.mean= ((Arg$Arg.debt*Arg$Arg.CO2*Arg$Arg.CPI)^(1/3))
+Arg = cbind(Arg, Arg.mean)</code></pre>
+<p>Note the object Arg.mean. This variable is the cubed root of a product of three inputs. To calculate this mean debt level, CO2 emisssions, and the CPI are all multiplied together. Because there are three inputs, the cubed root is taken. This is called a geometric mean, as opposed to the familiar arthimetic mean. The reason for using the geometric mean is that it is the same measure the UNDP uses to calculate the Human Development Index</p>
+</div>
+<div id="binding-countries-by-row-yields-the-following-table" class="section level4">
+<h4>Binding Countries by row yields the following table</h4>
+<p>data %&gt;% slice(1:10) %&gt;% #show only 1:n rows kable(digits=2,align=“c”)%&gt;% #make table and round to two digits kable_styling(bootstrap_options = c(“striped”, “hover”, “condensed”, “responsive”)) #apply other formatting</p>
 <p>Add any additional processing steps here.</p>
+</div>
 </div>
 </div>
 <div id="results" class="section level1">
 <h1>Results</h1>
 <p>Show tables, plots, etc. and describe them.</p>
-<pre class="r"><code>m &lt;- leaflet(data) %&gt;% 
-  addTiles() %&gt;% 
-  addCircleMarkers(~x, ~y, radius = ~size,color = ~as.factor(category)) %&gt;% 
-  addPopups(~x[2], ~y[2], &quot;Random popup&quot;)
-m  # a map with the default OSM tile layer</code></pre>
-<div class="figure">
-<div id="htmlwidget-8ce4f6136cd4f1492684" style="width:576px;height:288px;" class="leaflet html-widget"></div>
-<script type="application/json" data-for="htmlwidget-8ce4f6136cd4f1492684">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addTiles","args":["//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",null,null,{"minZoom":0,"maxZoom":18,"tileSize":256,"subdomains":"abc","errorTileUrl":"","tms":false,"noWrap":false,"zoomOffset":0,"zoomReverse":false,"opacity":1,"zIndex":1,"detectRetina":false,"attribution":"&copy; <a href=\"http://openstreetmap.org\">OpenStreetMap<\/a> contributors, <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA<\/a>"}]},{"method":"addCircleMarkers","args":[[-28.1901028566062,-54.8200888652354,-24.6133721061051,-53.2647391408682,-25.9049004502594,33.7853913009167,-0.246330443769693,-4.91572408005595,-45.2749214228243,-43.2992456015199,6.58040651120245,-10.8659354690462,-0.477281240746379,58.9598938263953,37.5622043106705,-15.8600128814578,-50.412586228922,36.666385922581,-0.235030213370919,25.0673339702189],[176.402085497975,81.5217161737382,179.960893057287,-67.996298186481,128.173286626115,172.837410187349,-147.077414626256,75.6890043150634,-99.0057505387813,78.6432872246951,24.040136905387,-32.4573364388198,-35.7794349454343,60.7569194957614,-0.272853998467326,-174.14782712236,75.3269712254405,130.676704784855,59.287440860644,-33.6982063762844],[9.58054877701215,7.69785818527453,12.1712665981613,17.9820418462623,10.2674155530985,12.3251065332443,19.7080722788814,6.63475380162708,9.08780865953304,12.3922644229606,16.4846519101411,5.67481305799447,11.74023696105,19.9102060648147,8.83557366440073,15.2320861828048,6.6605642135255,18.6398591287434,7.68890561070293,15.580177642405],null,null,{"interactive":true,"className":"","stroke":true,"color":["c","a","d","a","d","b","b","d","e","a","e","d","a","d","c","d","d","c","c","e"],"weight":5,"opacity":0.5,"fill":true,"fillColor":["c","a","d","a","d","b","b","d","e","a","e","d","a","d","c","d","d","c","c","e"],"fillOpacity":0.2},null,null,null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addPopups","args":[-54.8200888652354,81.5217161737382,"Random popup",null,null,{"maxWidth":300,"minWidth":50,"autoPan":true,"keepInView":false,"closeButton":true,"className":""}]}],"limits":{"lat":[-54.8200888652354,58.9598938263953],"lng":[-174.14782712236,179.960893057287]}},"evals":[],"jsHooks":[]}</script>
-<p class="caption">
-Map of completely random data
-</p>
-</div>
-<pre class="r"><code>data %&gt;% 
+<p>{r, fig.width=6, fig.height=3, fig.cap=“Map of completely random data”} m &lt;- leaflet(data) %&gt;% addTiles() %&gt;% addCircleMarkers(~x, ~y, radius = ~size,color = ~as.factor(category)) %&gt;% addPopups(~x[2], ~y[2], “Random popup”) m # a map with the default OSM tile layer</p>
+<pre><code>
+
+``{r}
+data %&gt;% 
   ggplot(aes(x=x,y=y,col=category))+
   geom_point()</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
 <div id="conclusions" class="section level1">
 <h1>Conclusions</h1>
