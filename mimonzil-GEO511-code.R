@@ -820,9 +820,11 @@ mapCountryData(sPDF, nameColumnToPlot="popsize", mapRegion='latin america')
 df <- NULL  
 df$country <- c("Argentina", "Bolivia", "Brazil", "Chile", "Costa Rica", "Ecuador", "Dominican Republic", "Ecuador", "El Salvador", "Mexico", "Panama", "Paraguay", "Peru", "Uruguay")
 df$code<- c("ARG", "BOL", "BRA", "CHL", "COL", "CRI", "DOM", "ECU", "SLV", "MEX", "PAN", "PRY", "PER", "URY")  
-df$mean = AU$mean
+df$New.Development.Indicator = AU$mean
 df<-as.data.frame(df)  
-sPDF <- joinCountryData2Map( df, joinCode = "NAME", nameJoinColumn = "code")  
+sPDF <- joinCountryData2Map( df, joinCode = "NAME", nameJoinColumn = "code") 
+mapCountryData(sPDF, nameColumnToPlot="New.Development.Indicator", mapRegion='latin america')
+
 
 lat.am = mapCountryData(sPDF, nameColumnToPlot="mean", mapRegion='latin america',xlim=bbox(sPDFmyCountries)[1,], ylim=bbox(sPDFmyCountries)[2,])
 

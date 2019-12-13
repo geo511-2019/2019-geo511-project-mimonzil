@@ -912,7 +912,10 @@ head(AU)
 
 # Results
 
-#####First let's examine what the individual country level trends look like:
+
+
+
+####First let's examine what the individual country level trends look like:
 ```{r}
 ggplot(AU, aes(date, mean, col = country))+
   geom_point()+
@@ -946,5 +949,3 @@ Using a Random Effects model explains just over 30% of the variation we see in o
 # Conclusions
 
 Indices are an interesting may of measuring trends over time and space. There are many that exist that provide us with new information every year. Creating a new index may not be too difficult conceptually, but there are challenges to building one that is effective. There should be a strong case that a combination of quantitative variables represent a changing process in the world. Next, ensuring a sufficient amount of data exists is necessary for building the strongest time-series or panel data models.
-
-# References

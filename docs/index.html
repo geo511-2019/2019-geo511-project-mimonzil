@@ -500,8 +500,8 @@ Arg = cbind(Arg, Arg.mean)</code></pre>
 </div>
 <div id="results" class="section level1">
 <h1>Results</h1>
-<div id="first-lets-examine-what-the-individual-country-level-trends-look-like" class="section level5">
-<h5>First let’s examine what the individual country level trends look like:</h5>
+<div id="first-lets-examine-what-the-individual-country-level-trends-look-like" class="section level4">
+<h4>First let’s examine what the individual country level trends look like:</h4>
 <pre class="r"><code>ggplot(AU, aes(date, mean, col = country))+
   geom_point()+
   geom_line()+
@@ -509,7 +509,6 @@ Arg = cbind(Arg, Arg.mean)</code></pre>
 <p><img src="index_files/figure-html/unnamed-chunk-9-1.png" width="672" /> Note that as the indicator goes up, utility goes down.</p>
 <p>Next is it possible to identify a trend?</p>
 <p>There isn’t enough data yet to build a time-series model of any one single country. However, if we use a panel data model, it is possible to extend our analysis across borders.</p>
-</div>
 <div id="fixed-effects" class="section level5">
 <h5>Fixed Effects</h5>
 <pre class="r"><code>AU.fe &lt;- plm(mean~date, data = AU, model = &quot;within&quot;)
@@ -601,12 +600,10 @@ summary(AU.ra)</code></pre>
 <p>Using a Random Effects model explains just over 30% of the variation we see in our model</p>
 </div>
 </div>
+</div>
 <div id="conclusions" class="section level1">
 <h1>Conclusions</h1>
 <p>Indices are an interesting may of measuring trends over time and space. There are many that exist that provide us with new information every year. Creating a new index may not be too difficult conceptually, but there are challenges to building one that is effective. There should be a strong case that a combination of quantitative variables represent a changing process in the world. Next, ensuring a sufficient amount of data exists is necessary for building the strongest time-series or panel data models.</p>
-</div>
-<div id="references" class="section level1">
-<h1>References</h1>
 </div>
 
 <!-- give the footer some space -->
