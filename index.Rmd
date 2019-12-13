@@ -20,6 +20,7 @@ library(rworldmap)
 library(ggmap)
 
 
+
 fredr_set_key("6b0cdd4cca87cf2616946fd1b9c3e865")
 
 # Political Stability - Indicator = Public Debt
@@ -842,6 +843,8 @@ library(plm)
 library(forecast)
 library(rworldmap)
 library(ggmap)
+library(knitr)
+
 ```
 
 ### Download and clean data for Political Stability
@@ -948,4 +951,13 @@ Using a Random Effects model explains just over 30% of the variation we see in o
 
 # Conclusions
 
-Indices are an interesting may of measuring trends over time and space. There are many that exist that provide us with new information every year. Creating a new index may not be too difficult conceptually, but there are challenges to building one that is effective. There should be a strong case that a combination of quantitative variables represent a changing process in the world. Next, ensuring a sufficient amount of data exists is necessary for building the strongest time-series or panel data models.
+Indices are an interesting may of measuring trends over time and space. There are many that exist that provide us with new information every year. Creating a new index may not be too difficult conceptually, but there are challenges to building one that is effective. There should be a strong case that a combination of quantitative variables represent a changing process in the world. An issue in this case is the scale of the indicator. For instance, CO2 Emissions as a number will be far larger than the Consumer Price Index. In the future the combination may provide a more meaningful representation if all input observations were first standardized, then combined using the geometric mean. Next, ensuring a sufficient amount of data exists is necessary for building the strongest time-series or panel data models. Finally, a Principle Component Analysis may be worth consideration.  
+
+
+# References:
+
+Federal Reserve Bank of St. Louis and US. Office of Management and Budget, retrieved from FRED, Federal Reserbe Bank of St. Louis
+
+World Bank. World Development Indicators. Bank Group
+
+
